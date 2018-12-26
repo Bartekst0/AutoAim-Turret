@@ -1,0 +1,88 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class TurretManualCtrl : MonoBehaviour
+{
+    
+    public GameObject TurretVerticalAxis;
+    public GameObject TurretHorizontalAxis;
+    public GameObject Bullet;
+    public GameObject GunEnd1;
+    public GameObject GunEnd2;
+    public GameObject Target;
+
+
+    Quaternion RotationV;
+    Quaternion RotationH;
+    Vector3 aimAngle;
+
+    private bool rotating = true;
+
+    //float v;
+    // float h;
+    float angle;
+    float distance;
+    float g = 9.81f;
+    public int velocity;
+
+    Vector3 dist;
+    // Use this for initialization
+    void Start ()
+    {
+		
+	}
+	
+	// Update is called once per frame
+	void Update ()
+    {
+       // v = Input.GetAxis("Horizontal");
+        //h = Input.GetAxis("Vertical");
+
+       // TurretVerticalAxis.transform.Rotate(new Vector3(0, v, 0));
+       // TurretHorizontalAxis.transform.Rotate(new Vector3(h, 0, 0));
+
+        //if (Input.GetKeyDown(KeyCode.Q))
+        if(true)
+                Aim();
+
+        if (Input.GetKeyDown(KeyCode.Space))
+            Fire();
+
+        
+
+    }
+
+    public void Aim()
+    {
+        dist = Target.transform.position - transform.position;
+        distance = dist.magnitude;
+
+        Debug.Log("Distance:" + distance);
+
+        RotationV = Quaternion.LookRotation(Target.transform.position-transform.position);
+
+        TurretVerticalAxis.transform.rotation = Quaternion.Slerp(TurretVerticalAxis.transform.rotation, RotationV, 0.1f);
+
+        //TurretVerticalAxis.transform.LookAt(Target.transform.position);
+
+        angle = Mathf.Rad2Deg * -0.5f * Mathf.Asin(g * distance / (velocity * velocity));
+
+        Quaternion targetRotation = Quaternion.Euler(new Vector3( angle, 0, 0));
+
+        TurretHorizontalAxis.transform.localRotation = Quaternion.Slerp(TurretHorizontalAxis.transform.localRotation, targetRotation,0.1f);
+
+
+        //Debug.Log("Angle:"+ -angle);
+        //Debug.Log(targetRotation);
+
+        //TurretHorizontalAxis.transform.Rotate(new Vector3(angle, 0, 0));
+    }
+
+    public void Fire()
+    {
+        Instantiate(Bullet, GunEnd1.transform.position, GunEnd1.transform.rotation);
+        Instantiate(Bullet, GunEnd2.transform.position, GunEnd2.transform.rotation);
+
+    }
+}
